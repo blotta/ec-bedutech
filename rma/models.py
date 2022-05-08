@@ -15,7 +15,7 @@ class TimeStampedModel(models.Model):
 
 class Address(models.Model):
     street = models.CharField(max_length=1024)
-    number = models.IntegerField()
+    number = models.CharField(max_length=20)
     complement = models.CharField(max_length=256, blank=True, null=True)
     cep = models.CharField(max_length=10)
     neighborhood = models.CharField(max_length=256)
@@ -26,6 +26,13 @@ class Address(models.Model):
     def __str__(self):
         return f"{self.street}, {self.number} - {self.neighborhood}, {self.city} - {self.state}/{self.cep}"
 
+
+class PickupLocation(models.Model):
+    name = models.CharField(max_length=1024)
+    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
+
+    def __str__(self) -> str:
+        return f"{self.name} - {self.address}"
 
 
 class Customer(models.Model):
@@ -44,10 +51,14 @@ class ProductReturn(TimeStampedModel):
     customer_person = models.CharField(max_length=128)
     technician = models.CharField(max_length=128)
     reason = models.TextField(blank=True, null=True)
-    address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
+    # address = models.ForeignKey(Address, on_delete=models.DO_NOTHING)
+    pickup_location = models.ForeignKey(PickupLocation, on_delete=models.CASCADE)
     min_pickup_date = models.DateField() # createdat + 7
     pickup_date = models.DateField(blank=True, null=True)
     return_date = models.DateField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return f"{self.rma_code} - {self.customer} - {self.product}"
 
     STATUS_CREATED = 'CREATED'
     STATUS_PICKEDUP = 'PICKEDUP'
