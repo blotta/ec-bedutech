@@ -6,6 +6,8 @@ Create a `.env` file:
 ```
 SECRET_KEY=secret_key
 GOOGLE_API_KEY=google_api_key # uses Places API
+DEBUG=1
+ALLOWED_HOSTS=
 ```
 
 ## Run
