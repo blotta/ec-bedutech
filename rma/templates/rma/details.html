@@ -1,0 +1,69 @@
+{% extends 'rma/base.html' %}
+
+{% block content %}
+
+
+<div class="row mt-5">
+
+    <div class="col-md-8">
+        <h3 class="">{{ item.customer.name }}</h3>
+
+        <p class="">Código RMA: {{ item.rma_code }}</p>
+        <p class="">Produto: {{ item.product }}</p>
+        <p class="">Responsável: {{ item.customer_person }}</p>
+        <p class="">Técnico: {{ item.technician }}</p>
+        {% if item.reason %}
+        <p class="">Motivo: {{ item.reason }}</p>
+        {% endif %}
+
+        <p class="">Ponto de Coleta: {{ item.address }}</p>
+
+        <p class="">Status: {{ item.status_str }} {{ item.status_date|date:'d/m/Y'}}</p>
+    </div>
+
+    <div class="col-md-4">
+        <div class="d-grid">
+            <a href="{% url 'edit' item.rma_code %}" role="button" class="btn btn-secondary mb-3">Editar</a>
+        </div>
+        <div class="list-group">
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Criado</h6>
+                    <p>{{ item.created_at|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6>Chegada no ponto de coleta</h6>
+                    <p>{{ item.min_pickup_date|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    {% if item.pickup_date > now %}
+                    <h6>Coletado</h6>
+                    <p>{{ item.pickup_date|date:"d/m/Y" }}</p>
+                    {% else %}
+                    <h6 class="text-muted">Coletado</h6>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    {% if item.return_date > now %}
+                    <h6>Finalizado</h6>
+                    <p>{{ item.return_date|date:"d/m/Y" }}</p>
+                    {% else %}
+                    <h6 class="text-muted">Finalizado</h6>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -2,6 +2,33 @@
 
 {% block content %}
 
-Listing
+<div class="d-flex w-100 justify-content-between align-items-center m-3">
+    <h1 class="">Retornos</h1>
+    <a role="button" class="btn btn-outline-primary" href="{% url 'create' %}">Novo pedido de retorno</a>
+</div>
+
+{% for item in items %}
+    <div class="card p-4 mb-2">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex flex-column w-100 justify-content-start align-items-left">
+                    <h5 class="card-title me-2">{{ item.customer.name }}</h5>
+                    <small>{{ item.created_at|date:"d/m/Y" }}</small>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex flex-column w-100 justify-content-start align-items-left">
+                    <p>{{ item.product }}</p>
+                    <small>{{ item.status_str }} {{ item.status_date|date:"d/m/Y"}}</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="d-flex flex-row-reverse w-100 justify-content-start align-items-center">
+                    <a href="{% url 'details' item.rma_code %}" role="button" class="btn btn-outline-secondary">Detalhes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
 
 {% endblock %}
