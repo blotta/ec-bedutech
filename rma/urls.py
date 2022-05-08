@@ -10,5 +10,8 @@ urlpatterns = [
 
     path('pickuplocations/', views.pickuplocation_list, name='pickuplocation_list'),
     path('pickuplocations/create/', views.pickuplocation_create, name='pickuplocation_create'),
+
+    path('customers/', views.customer_list, name='customer_list'),
+    path('customers/create/', views.customer_create, name='customer_create'),
 ]
     

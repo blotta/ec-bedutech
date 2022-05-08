@@ -1,0 +1,29 @@
+{% extends 'rma/base.html' %}
+
+{% block content %}
+
+<div class="d-flex w-100 justify-content-between align-items-center m-3">
+    <h1 class="">Clientes</h1>
+    <a role="button" class="btn btn-outline-primary" href="{% url 'customer_create' %}">Novo Cliente</a>
+</div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Endereço</th>
+            </tr>
+        </thead>
+        <tbody>
+{% for item in items %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.address }}</td>
+            </tr>
+{% endfor %}
+        </tbody>
+    </table>
+
+
+
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends 'rma/base.html' %}
+
+{% block content %}
+
+<div class="d-flex w-100 justify-content-between align-items-center m-3">
+    <h1>Novo cliente</h1>
+</div>
+
+<form action="" method="post">
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <input type="submit" class="btn btn-primary" value="Criar">
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+        window.setAddressFields = function(address) {
+            for (let key of Object.keys(address)) {
+                $('input[type=hidden][name='+key+']').val(address[key]);
+
+            }
+        }
+        window.initMap = function() {
+            $('#address-search').change(e => {
+                console.log(e);
+            });
+
+            const input = document.getElementById('address-search');
+            const options = {
+                componentRestrictions: { country: 'br' },
+                fields: ['address_components', 'name']
+            }
+            const autocomplete = new google.maps.places.Autocomplete(input, options);
+            autocomplete.addListener('place_changed', function () {
+                const place = autocomplete.getPlace();
+                const address = {
+                    street: '',
+                    number: '',
+                    cep: '',
+                    neighborhood: '',
+                    city: '',
+                    state: '',
+                    country: '',
+                }
+                console.log(place);
+                if (!place.address_components) {
+                    setAddressFields(address);
+                    return;
+                }
+                for (const component of place.address_components) {
+                    const componentType = component.types[0];
+                    switch (componentType) {
+                        case "street_number": {
+                            // address1 = `${component.long_name} ${address1}`;
+                            address.number = component.long_name;
+                            break;
+
+                        }
+
+                        case "route": {
+                            // address1 += component.short_name;
+                            address.street = component.long_name;
+                            break;
+                        }
+
+                        case "postal_code": {
+                            // postcode = `${component.long_name}${postcode}`;
+                            address.cep = `${component.long_name}${address.cep}`;
+                            break;
+                        }
+
+                        case "postal_code_suffix": {
+                            address.cep = `${address.cep}-${component.long_name}`;
+                            break;
+                        }
+                        case "sublocality_level_1": {
+                            address.neighborhood = component.long_name;
+                            break;
+                        }
+                        case "locality":
+                        case "administrative_area_level_2":
+                            // document.querySelector("#locality").value = component.long_name;
+                            address.city = component.long_name;
+                            break;
+                        case "administrative_area_level_1": {
+                            // document.querySelector("#state").value = component.short_name;
+                            address.state = component.short_name;
+                            break;
+                        }
+                        case "country":
+                            // document.querySelector("#country").value = component.long_name;
+                            address.country = component.long_name;
+                            break;
+                    }
+                }
+
+                console.log(address);
+                setAddressFields(address);
+            })
+        }
+</script>
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key={{ gapikey }}&libraries=places&callback=initMap">
+</script>
+
+
+{% endblock %}

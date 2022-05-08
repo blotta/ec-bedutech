@@ -3,9 +3,9 @@ from django.conf import settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Address, PickupLocation, ProductReturn
+from .models import Address, Customer, PickupLocation, ProductReturn
 
-from .forms import PickupLocationCreateForm, ProductReturnCreateForm, ProductReturnEditForm
+from .forms import CustomerCreateForm, PickupLocationCreateForm, ProductReturnCreateForm, ProductReturnEditForm
 
 def listing(request):
     rma_list = ProductReturn.objects.all()
@@ -29,7 +29,6 @@ def create(request):
     return render(request, 'rma/create.html', { 'form': form })
 
 def edit(request, rma_code):
-    # rma = get_object_or_404(ProductReturn, rma_code=rma_code)
     rma = ProductReturn.objects.get(rma_code=rma_code)
     form = ProductReturnEditForm(request.POST or None, instance=rma)
     if form.is_valid():
@@ -37,7 +36,6 @@ def edit(request, rma_code):
         return redirect('details', saved.rma_code)
 
     return render(request, 'rma/edit.html', { 'form': form })
-
 
 
 def pickuplocation_list(request):
@@ -63,10 +61,38 @@ def pickuplocation_create(request):
             pl.name = form.cleaned_data['name']
             pl.address = address
             pl.save()
-            # new_pl = pl.save()
-            # new_pl = PickupLocation.objects.create(name=form.cleaned_data['name'], address=new_address)
             return redirect('pickuplocation_list')
         
     if form == None:
         form = PickupLocationCreateForm
     return render(request, 'pickuplocation/create.html', {'form': form, 'gapikey': settings.GOOGLE_API_KEY})
+
+
+def customer_list(request):
+    items = Customer.objects.all()
+    return render(request, 'customer/listing.html', {'items': items})
+    
+def customer_create(request):
+    form = None
+    if request.method == 'POST':
+        form = CustomerCreateForm(request.POST)
+        if form.is_valid():
+            address = Address()
+            address.street = form.cleaned_data['street']
+            address.number = form.cleaned_data['number']
+            address.complement = form.cleaned_data['complement']
+            address.cep = form.cleaned_data['cep']
+            address.neighborhood = form.cleaned_data['neighborhood']
+            address.city = form.cleaned_data['city']
+            address.state = form.cleaned_data['state']
+            address.country = form.cleaned_data['country']
+            address.save()
+            pl = Customer()
+            pl.name = form.cleaned_data['name']
+            pl.address = address
+            pl.save()
+            return redirect('customer_list')
+        
+    if form == None:
+        form = CustomerCreateForm
+    return render(request, 'customer/create.html', {'form': form, 'gapikey': settings.GOOGLE_API_KEY})

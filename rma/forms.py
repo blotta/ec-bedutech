@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from django import forms
 from django.forms import ModelForm
-from .models import PickupLocation, ProductReturn
+from .models import Customer, PickupLocation, ProductReturn
 
 
 class ProductReturnCreateForm(ModelForm):
@@ -33,7 +33,6 @@ class ProductReturnCreateForm(ModelForm):
             'pickup_location': forms.Select(attrs={'class': 'form-control'}),
             'min_pickup_date': forms.DateInput(format=('%d/%m/%Y'), attrs={
                 'class': 'form-control dateinputpicker', 'placeholder': 'aaaa-mm-dd', 'min': '2022-05-10'}),
-                # 'class': 'form-control', 'type': 'date', 'placeholder': 'dd/mm/aaaa', 'min': '2022-05-10'})
         }
 
 
@@ -42,12 +41,7 @@ class ProductReturnEditForm(ModelForm):
         super(ProductReturnEditForm, self).__init__(*args, **kwargs)
         min_pickup_date = datetime.now() + timedelta(days=4)
         self.fields['min_pickup_date'].widget.attrs['min'] = min_pickup_date.strftime('%Y-%m-%d')
-        print("hi")
     
-    # min_pickup_date = forms.DateField(
-    #     widget=forms.DateInput(attrs={ 'class': 'form-control dateinputpicker', 'placeholder': 'aaaa-mm-dd', 'min': '2022-05-10'}),
-    #     input_formats=('%d/%m/%Y',))
-
     class Meta:
         model = ProductReturn
         fields = ('product', 'customer', 'customer_person', 'technician',
@@ -75,10 +69,10 @@ class ProductReturnEditForm(ModelForm):
             'min_pickup_date': forms.DateInput(attrs={
                 'class': 'form-control dateinputpicker', 'placeholder': 'aaaa-mm-dd', 'min': '2022-05-10'}),
 
-            'pickup_date': forms.DateInput(format=('%d/%m/%Y'), attrs={
+            'pickup_date': forms.DateInput(attrs={
                 'class': 'form-control dateinputpicker', 'placeholder': 'aaaa-mm-dd', 'min': '2022-05-10'}),
 
-            'return_date': forms.DateInput(format=('%d/%m/%Y'), attrs={
+            'return_date': forms.DateInput(attrs={
                 'class': 'form-control dateinputpicker', 'placeholder': 'aaaa-mm-dd', 'min': '2022-05-10'}),
         }
 
@@ -99,6 +93,33 @@ class PickupLocationCreateForm(forms.ModelForm):
 
     class Meta:
         model = PickupLocation
+        fields = ('name',)
+        labels = {
+            'name': 'Nome'
+        }
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+
+
+class CustomerCreateForm(forms.ModelForm):
+    address_text = forms.CharField(max_length=1024, label='Pesquisar endereço',
+        widget=forms.TextInput(attrs={'id': 'address-search','class': 'form-control'}))
+    
+    complement = forms.CharField(max_length=256, required=False, label='Complemento',
+        widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+    street = forms.CharField(max_length=1024, required=True, widget=forms.HiddenInput())
+    number = forms.CharField(max_length=20, required=True, widget=forms.HiddenInput())
+    cep = forms.CharField(max_length=10, required=True, widget=forms.HiddenInput())
+    neighborhood = forms.CharField(max_length=256, required=True, widget=forms.HiddenInput())
+    city = forms.CharField(max_length=128, required=True, widget=forms.HiddenInput())
+    state = forms.CharField(max_length=2, required=True, widget=forms.HiddenInput())
+    country = forms.CharField(max_length=128, required=True, widget=forms.HiddenInput())
+
+    class Meta:
+        model = Customer
         fields = ('name',)
         labels = {
             'name': 'Nome'
